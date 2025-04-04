@@ -1,0 +1,38 @@
+import { Request, Response } from "express";
+import Post, { IPost } from "../models/postModel";
+import User from "../models/userModel";
+
+
+export const createPostFunc = async (req: Request, res: Response): Promise<void> => {
+    try {
+        console.log(req.body);
+        const createPostRequest: IPost = await Post.create(req.body);
+
+        // for giving first badge
+        // const userPosts = await Post.find({ userId: req.body.userId });
+        // if (userPosts.length === 1) {
+        //     await User.updateOne(
+        //         { _id: req.body.userId },
+        //         { $push: { badgesEarned: "First Post Pioneer", userPostsRef: createPostRequest._id } }
+        //     );
+        // } else {
+        //     await User.updateOne({ _id: req.body.userId }, { $push: { userPostsRef: createPostRequest._id } })
+        // }
+
+        await User.updateOne({ _id: req.body.userId }, { $push: { userPostsRef: createPostRequest._id } })
+
+        console.log(createPostRequest)
+
+        res.json({
+            success: true,
+            message: "Post creation done",
+            postData: createPostRequest,
+        });
+    } catch (error: any) {
+        console.error("Error creating post:", error);
+        res.status(500).json({
+            success: false,
+            message: `Error creating post: ${error.message}`,
+        });
+    }
+};
