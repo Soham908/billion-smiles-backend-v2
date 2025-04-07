@@ -27,20 +27,20 @@ export interface IPost extends Document {
 }
 
 const commentSchema = new Schema<IComment>({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'userModel', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   commentUsername: { type: String },
   commentText: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
 const postSchema = new Schema<IPost>({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'userModel', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   imageUrl: { type: String, required: true },
   caption: { type: String, trim: true, maxLength: 500 },
   campaignId: { type: mongoose.Schema.Types.ObjectId, ref: 'campaigns' },
   tags: [{ type: String, trim: true }],
   likes: { type: Number, default: 0 },
-  likedBy: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: 'userModel' }, likedUsername: { type: String } }],
+  likedBy: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, likedUsername: { type: String } }],
   comments: [commentSchema],
   visibility: { type: String, enum: ['public', 'private'], default: 'public' },
   shares: { type: Number, default: 0 },

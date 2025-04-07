@@ -36,3 +36,25 @@ export const createPostFunc = async (req: Request, res: Response): Promise<void>
         });
     }
 };
+
+
+export const fetchAllPostsFunc = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const fetchPostAllRequest: IPost[] = await Post.find()
+            .populate("userId")
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            message: "All posts fetched",
+            allPosts: fetchPostAllRequest,
+        });
+
+    } catch (error: any) {
+        console.error("Error fetching all posts:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error fetching all posts",
+        });
+    }
+};
