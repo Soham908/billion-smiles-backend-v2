@@ -58,3 +58,24 @@ export const fetchAllPostsFunc = async (req: Request, res: Response): Promise<vo
         });
     }
 };
+
+
+export const fetchUsersPostsFunc = async (req: Request, res: Response) => {
+    try {
+        const fetchPosts = await Post.find({ userId: req.params.userId })
+        if (fetchPosts) {
+            res.json({
+                success: true, message: "User Posts fetched", userPosts: fetchPosts
+            })
+        }
+        else {
+            res.json({
+                success: true, message: "User does not have posts"
+            })
+        }
+    } catch (error) {
+        res.json({
+          success: false, message: "Error occured: " + error
+        })
+    }
+}

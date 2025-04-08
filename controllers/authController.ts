@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/userModel";
+import Post from "../models/postModel";
 
 
 export const userLoginFunc = async (req: Request, res: Response) => {
@@ -47,5 +48,29 @@ export const userSignupFunc = async (req: Request, res: Response) => {
         res.json({
             message: "Error Occured: " + error, success: false
         })
+    }
+}
+
+export const fetchUserFunc = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params
+        const userData = await User.findOne({ _id: userId })
+
+        const fetchPosts = await Post.find({ userId: userId })
+        if (fetchPosts) {
+            res.json({
+                success: true, message: "User Posts fetched", userPosts: fetchPosts, userData: userData
+            })
+        }
+        else {
+            res.json({
+                success: true, message: "User does not have posts", userData: userData
+            })
+        }
+    } catch (error) {
+        res.json({
+          success: false, message: "error occured: " + error
+        })
+        console.log(error)
     }
 }
