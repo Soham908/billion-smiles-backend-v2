@@ -75,7 +75,38 @@ export const fetchUsersPostsFunc = async (req: Request, res: Response) => {
         }
     } catch (error) {
         res.json({
-          success: false, message: "Error occured: " + error
+            success: false, message: "Error occured: " + error
         })
     }
 }
+
+export const likePostFunc = async (req: Request, res: Response) => {
+    try {
+        console.log(req.body);
+        const { userId, username, postId } = req.body
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            res.json({ success: false, message: "Post not found" });
+        }
+        else {
+            const alreadyLiked = post.likedBy.some(like => like.userId.toString() === userId.toString());
+            if (alreadyLiked) {
+                post.likes -= 1;
+                post.likedBy = post.likedBy.filter(like => like.userId.toString() !== userId.toString());
+            } else {
+                post.likes += 1;
+                post.likedBy.push({ userId, likedUsername: username });
+            }
+
+            await post.save();
+
+            res.json({
+                success: true, message: "Post like done", postData: post
+            })
+        }
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "fetching failed" });
+    }
+};

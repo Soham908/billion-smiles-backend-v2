@@ -59,14 +59,15 @@ export const fetchUserFunc = async (req: Request, res: Response) => {
         const fetchPosts = await Post.find({ userId: userId })
         if (fetchPosts) {
             res.json({
-                success: true, message: "User Posts fetched", userPosts: fetchPosts, userData: userData
+                success: true, message: "User Data and Posts fetched", userPosts: fetchPosts, userData: userData
             })
         }
         else {
             res.json({
-                success: true, message: "User does not have posts", userData: userData
+                success: true, message: "User Data exists but does not have posts", userData: userData
             })
         }
+        console.log()
     } catch (error) {
         res.json({
           success: false, message: "error occured: " + error
