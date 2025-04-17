@@ -6,33 +6,25 @@ import User from "../models/userModel";
 export const createPostFunc = async (req: Request, res: Response): Promise<void> => {
     try {
         console.log(req.body);
-        const createPostRequest: IPost = await Post.create(req.body);
+        const { userId, imageUrl, caption } = req.body
+        const createPostRequest: IPost = await Post.create({userId, imageUrl, caption});
 
         // for giving first badge
-        // const userPosts = await Post.find({ userId: req.body.userId });
-        // if (userPosts.length === 1) {
-        //     await User.updateOne(
-        //         { _id: req.body.userId },
-        //         { $push: { badgesEarned: "First Post Pioneer", userPostsRef: createPostRequest._id } }
-        //     );
-        // } else {
-        //     await User.updateOne({ _id: req.body.userId }, { $push: { userPostsRef: createPostRequest._id } })
-        // }
+        const userPosts = await Post.find({ userId: req.body.userId });
+        if (userPosts.length === 1) {
+            const userUpdate = await User.updateOne(
+                { _id: req.body.userId },
+                { $push: { badgesEarned: "First Post Pioneer" } }
+            );
+            console.log(userUpdate)
+        }
 
-        await User.updateOne({ _id: req.body.userId }, { $push: { userPostsRef: createPostRequest._id } })
+        res.json({ success: true, message: "Post creation done", postData: createPostRequest });
 
-        console.log(createPostRequest)
-
-        res.json({
-            success: true,
-            message: "Post creation done",
-            postData: createPostRequest,
-        });
     } catch (error: any) {
         console.error("Error creating post:", error);
         res.status(500).json({
-            success: false,
-            message: `Error creating post: ${error.message}`,
+            success: false, message: `Error creating post: ${error.message}`
         });
     }
 };
@@ -45,16 +37,13 @@ export const fetchAllPostsFunc = async (req: Request, res: Response): Promise<vo
             .sort({ createdAt: -1 });
 
         res.json({
-            success: true,
-            message: "All posts fetched",
-            allPosts: fetchPostAllRequest,
+            success: true, message: "All posts fetched", allPosts: fetchPostAllRequest,
         });
 
     } catch (error: any) {
         console.error("Error fetching all posts:", error);
         res.status(500).json({
-            success: false,
-            message: "Error fetching all posts",
+            success: false, message: "Error fetching all posts",
         });
     }
 };
@@ -87,7 +76,9 @@ export const likePostFunc = async (req: Request, res: Response) => {
 
         const post = await Post.findById(postId);
         if (!post) {
-            res.json({ success: false, message: "Post not found" });
+            res.json({
+                success: false, message: "Post not found"
+            });
         }
         else {
             const alreadyLiked = post.likedBy.some(like => like.userId.toString() === userId.toString());
@@ -107,6 +98,30 @@ export const likePostFunc = async (req: Request, res: Response) => {
         }
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: "fetching failed" });
+        res.json({
+            success: false, message: "fetching failed"
+        });
+    }
+};
+
+export const uploadCommentFunc = async (req: Request, res: Response) => {
+    try {
+        console.log(req.body);
+        const { userId, username, postId, commentText } = req.body
+        const uploadComment = await Post.findByIdAndUpdate(postId,
+            {
+                $push: { comments: { userId, commentUsername: username, commentText } }
+            },
+            { new: true }
+        ).lean();
+
+        res.json({
+            success: true, message: "post updated", postData: uploadComment
+        });
+    } catch (error) {
+        console.log(error);
+        res.json({
+            success: false, message: "updating post failed"
+        });
     }
 };
