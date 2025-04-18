@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import cors from "cors"
 import authRoute from "./routes/authRoute"
 import postRoute from "./routes/postRoute"
+import causeRoute from "./routes/causeRoute"
 
 dotenv.config()
 const app = express()
@@ -23,12 +24,7 @@ app.use(express.json())
 
 app.use("/auth", authRoute)
 app.use("/post", postRoute)
-
-
-
-
-
-
+app.use("/cause", causeRoute)
 
 
 

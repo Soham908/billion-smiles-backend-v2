@@ -6,8 +6,8 @@ import User from "../models/userModel";
 export const createPostFunc = async (req: Request, res: Response): Promise<void> => {
     try {
         console.log(req.body);
-        const { userId, imageUrl, caption } = req.body
-        const createPostRequest: IPost = await Post.create({userId, imageUrl, caption});
+        const { userId, imageUrl, caption, causeId } = req.body
+        const createPostRequest: IPost = await Post.create({userId, imageUrl, caption, causeId});
 
         // for giving first badge
         const userPosts = await Post.find({ userId: req.body.userId });

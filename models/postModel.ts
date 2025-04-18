@@ -16,7 +16,7 @@ export interface IPost extends Document {
   userId: mongoose.Types.ObjectId;
   imageUrl: string;
   caption: string;
-  campaignId?: mongoose.Types.ObjectId;
+  causeId?: mongoose.Types.ObjectId;
   tags: string[];
   likes: number;
   likedBy: ILike[];
@@ -37,7 +37,7 @@ const postSchema = new Schema<IPost>({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   imageUrl: { type: String, required: true },
   caption: { type: String, trim: true, maxLength: 500 },
-  campaignId: { type: mongoose.Schema.Types.ObjectId, ref: 'campaigns' },
+  causeId: { type: mongoose.Schema.Types.ObjectId, ref: 'campaigns' },
   tags: [{ type: String, trim: true }],
   likes: { type: Number, default: 0 },
   likedBy: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, likedUsername: { type: String } }],
